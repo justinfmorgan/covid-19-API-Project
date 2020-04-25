@@ -10,17 +10,30 @@ export default class App extends React.Component {
   state = {
     mapRegion: null,
     hasLocationPermissions: false,
-    locationResult: null
+    locationResult: null,
+    location: null
   };
 
   componentDidMount() {
     this.getLocationAsync();
   }
 
-    handleMapRegionChange = (mapRegion) => {
-      console.log(mapRegion);
-      this.setState({ mapRegion });
-    }
+  handleMapRegionChange = (mapRegion) => {
+    console.log(mapRegion);
+    this.setState({ mapRegion });
+  }
+
+  findCoordinates = () => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const location = JSON.stringify(position);
+
+        this.setState({ location });
+      },
+      error => Alert.alert(error.message),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
 
   async getLocationAsync() {
    let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -33,7 +46,7 @@ export default class App extends React.Component {
    }
 
    let location = await Location.getCurrentPositionAsync({});
-   this.setState({ locationResult: JSON.stringify(location) });
+   this.setState({ locationResult: location });
    
    // Center the map on the location we just fetched.
   this.setState({mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }});
@@ -57,15 +70,20 @@ export default class App extends React.Component {
             <MapView
               provider={PROVIDER_GOOGLE}
               style={styles.map}
-              region={this.state.mapRegion}
+              initialRegion={{
+                latitude: this.state.locationResult.coords.latitude,
+                longitude: this.state.locationResult.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+              }}
               onRegionChange={this.handleMapRegionChange}
               customMapStyle={mapStyle}
             >
               <Marker
               draggable
-              coordinate={{
-                latitude: 37.78825,
-                longitude: -122.4324,
+              coordinate = {{
+                latitude: this.state.locationResult.coords.latitude,
+                longitude: this.state.locationResult.coords.longitude,
               }}
               onDragEnd={(e) => alert(JSON.stringify(e.nativeEvent.coordinate))}
               title={'Test Marker'}
