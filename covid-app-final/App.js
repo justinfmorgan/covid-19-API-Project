@@ -6,12 +6,7 @@ import * as Location from 'expo-location'
 import Geocoder from 'react-native-geocoding';
 import Constants from 'expo-constants';
 
-//'https://maps.googleapis.com/maps/api/geocode/json?latlng=11.2742848,75.8013801&key=AIzaSyDzVaKkWBGoCnwxjoeg_ifZ3dUfowZlQAQ'
-
 Geocoder.init("AIzaSyDzVaKkWBGoCnwxjoeg_ifZ3dUfowZlQAQ");
-
-https://api.covid19api.com/summary
-
 
 // Grabs a JSON of the global data
 globalData = () => {
@@ -88,9 +83,18 @@ export default class App extends React.Component {
     // console.log(summary.Countries.length)
     for (var i = 0; i < summary.Countries.length; i++) {
         // console.log(summary.Countries[i].Slug)
+        var totalconfirmed;
+        var totaldeaths;
+        var totalrecovered;
         if (String(summary.Countries[i].Slug) == String(this.state.country).toLowerCase()) {
-            console.log(summary.Countries[i].TotalConfirmed);
-            alert("Total Confirmed COVID-19 Cases for " + this.state.country + " is: "+ summary.Countries[i].TotalConfirmed)
+            totalconfirmed = summary.Countries[i].TotalConfirmed;
+            totaldeaths = summary.Countries[i].TotalDeaths;
+            totalrecovered = summary.Countries[i].TotalRecovered;
+            // console.log(summary.Countries[i].TotalConfirmed);
+            alert("Covid 19 Tallies for " + this.state.country + ":\n"+ 
+                "Total Confirmed Cases: "+ totalconfirmed +
+                "\nTotal Deaths: " + totaldeaths + 
+                "\nTotal Recovered: " + totalrecovered)
         }
     }
     // this.getCountryName();

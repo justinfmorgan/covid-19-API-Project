@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mapMarkers",
-    "slug": "mapMarkers",
+    "name": "covid-app-final",
+    "slug": "covid-app-final",
     "platforms": [
       "ios",
       "android",
