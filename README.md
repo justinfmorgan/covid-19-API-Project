@@ -20,18 +20,18 @@ Hello World
 # Step 3 Documentation
 Displaying a marker on a map
 <br/>
-<img src="./images/Step\ 3.PNG.png" width="35%" />
+<img src="./images/Step_3.PNG.png" width="35%" />
 <br/>
 
 # Step 4 Documenation
 Displaying Covid data within the app via an alert.
 <br/>
-<img src="./images/Step\ 4.PNG.png" width="35%" />
+<img src="./images/Step_4.PNG.png" width="35%" />
 <br/>
 
 # Step 5 Documentation (So far)
 Displaying total confirmed cases using an alert upon completing dragging of marker to a country on the map.
 <br/>
-<img src="./images/Step\ 5_2.PNG.png" width="35%" />
+<img src="./images/Step_5_2.PNG.png" width="35%" />
 <br/>
-<img src="./images/Step\ 5.PNG.png" width="35%" />
+<img src="./images/Step_5.PNG.png" width="35%" />
