@@ -3,23 +3,66 @@ import { StyleSheet, Text, View , TextInput} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Permissions from 'expo-permissions'
 import * as Location from 'expo-location'
+import Geocoder from 'react-native-geocoding';
 import Constants from 'expo-constants';
 
+//'https://maps.googleapis.com/maps/api/geocode/json?latlng=11.2742848,75.8013801&key=AIzaSyDzVaKkWBGoCnwxjoeg_ifZ3dUfowZlQAQ'
+
+Geocoder.init("AIzaSyDzVaKkWBGoCnwxjoeg_ifZ3dUfowZlQAQ");
 
 export default class App extends React.Component {
   state = {
     mapRegion: null,
     hasLocationPermissions: false,
     locationResult: null,
-    location: null
+    location: null,
+    markerLatitude: null,
+    markerLongitude: null,
+    geoData: null,
+    country: null
   };
 
   componentDidMount() {
     this.getLocationAsync();
   }
 
+
+  async grabGeoData(lat, lng) {
+    await Geocoder.from(lat, lng)
+        .then(json => {
+            // console.log(JSON.stringify(json))
+            var addressComponents = json.results[0].address_components;
+            // console.log(addressComponents);
+            for (var i = 0; i < addressComponents.length; i++) {
+                if (addressComponents[i].types[0] == "country") {
+                    this.setState({ country: addressComponents[i].long_name});
+                    console.log(addressComponents[i].long_name);
+                }
+            }
+            this.setState({ geoData: addressComponents});
+            // alert(JSON.stringify(addressComponents))
+        })
+        .catch(error => console.warn(error));
+  }
+
+  // extract country short name (e.g. GB for Great Britain) from google geocode API result
+  getCountryName() {
+    for (var i = 0; i < this.state.geoData.length; i++) {
+        if (this.state.geoData[i].types[0] == "country") {
+            this.setState({ country: this.state.geoData[i].long_name});
+            console.log(this.state.geoData[i].long_name);
+        }
+    }
+  }
+
+  async markerFunction(lat, lon) {
+    this.setState({ markerLatitude: lat, markerLongitude: lon});
+    this.grabGeoData(lat, lon);
+    // this.getCountryName();
+  }
+
   handleMapRegionChange = (mapRegion) => {
-    console.log(mapRegion);
+    // console.log(mapRegion);
     this.setState({ mapRegion });
   }
 
@@ -85,7 +128,15 @@ export default class App extends React.Component {
                 latitude: this.state.locationResult.coords.latitude,
                 longitude: this.state.locationResult.coords.longitude,
               }}
-              onDragEnd={(e) => alert(JSON.stringify(e.nativeEvent.coordinate))}
+              onDragEnd={(e) => 
+              //alert(this.getCountryName(this.grabGeoData(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)))
+              //   this.setState({
+              //   country: this.grabCountry(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
+              // })
+                // this.setState({ markerLatitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude})
+                this.markerFunction(e.nativeEvent.coordinate.latitude,e.nativeEvent.coordinate.longitude)
+              }
+                //alert(JSON.stringify(e.nativeEvent.coordinate))}
               title={'Test Marker'}
               description={'This is a description of the marker'}
               />
