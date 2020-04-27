@@ -10,6 +10,16 @@ import Constants from 'expo-constants';
 
 Geocoder.init("AIzaSyDzVaKkWBGoCnwxjoeg_ifZ3dUfowZlQAQ");
 
+https://api.covid19api.com/summary
+
+
+// Grabs a JSON of the global data
+globalData = () => {
+    const URL = "https://api.covid19api.com/world/total";
+    return fetch(URL)
+            .then((res) => res.json());
+}
+
 export default class App extends React.Component {
   state = {
     mapRegion: null,
@@ -26,6 +36,19 @@ export default class App extends React.Component {
     this.getLocationAsync();
   }
 
+  // Gets live country data
+  async countryData(country) {
+      country = country.replace(" ", "-")
+      const URL = 'https://api.covid19api.com/live/country/' + country + '/status/confirmed';
+      return await fetch(URL)
+              .then((res) => res.json());
+  }
+
+  async summaryData() {
+      const URL = "https://api.covid19api.com/summary";
+      return await fetch(URL)
+              .then((res) => res.json());
+  }
 
   async grabGeoData(lat, lng) {
     await Geocoder.from(lat, lng)
@@ -35,7 +58,7 @@ export default class App extends React.Component {
             // console.log(addressComponents);
             for (var i = 0; i < addressComponents.length; i++) {
                 if (addressComponents[i].types[0] == "country") {
-                    this.setState({ country: addressComponents[i].long_name});
+                    this.setState({ country: addressComponents[i].long_name.replace(" ", "-")});
                     console.log(addressComponents[i].long_name);
                 }
             }
@@ -50,14 +73,26 @@ export default class App extends React.Component {
     for (var i = 0; i < this.state.geoData.length; i++) {
         if (this.state.geoData[i].types[0] == "country") {
             this.setState({ country: this.state.geoData[i].long_name});
-            console.log(this.state.geoData[i].long_name);
+            // console.log(this.state.geoData[i].long_name);
         }
     }
   }
 
-  async markerFunction(lat, lon) {
+  async completedDrag(lat, lon) {
     this.setState({ markerLatitude: lat, markerLongitude: lon});
-    this.grabGeoData(lat, lon);
+    await this.grabGeoData(lat, lon);
+    console.log(this.state.country)
+    // console.log(JSON.stringify(await this.countryData(this.state.country)))
+    let summary = await this.summaryData();
+    // console.log(JSON.stringify(summary))
+    // console.log(summary.Countries.length)
+    for (var i = 0; i < summary.Countries.length; i++) {
+        // console.log(summary.Countries[i].Slug)
+        if (String(summary.Countries[i].Slug) == String(this.state.country).toLowerCase()) {
+            console.log(summary.Countries[i].TotalConfirmed);
+            alert("Total Confirmed COVID-19 Cases for " + this.state.country + " is: "+ summary.Countries[i].TotalConfirmed)
+        }
+    }
     // this.getCountryName();
   }
 
@@ -116,8 +151,8 @@ export default class App extends React.Component {
               initialRegion={{
                 latitude: this.state.locationResult.coords.latitude,
                 longitude: this.state.locationResult.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421
+                latitudeDelta: 80,
+                longitudeDelta: 80
               }}
               onRegionChange={this.handleMapRegionChange}
               customMapStyle={mapStyle}
@@ -134,7 +169,7 @@ export default class App extends React.Component {
               //   country: this.grabCountry(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
               // })
                 // this.setState({ markerLatitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude})
-                this.markerFunction(e.nativeEvent.coordinate.latitude,e.nativeEvent.coordinate.longitude)
+                this.completedDrag(e.nativeEvent.coordinate.latitude,e.nativeEvent.coordinate.longitude)
               }
                 //alert(JSON.stringify(e.nativeEvent.coordinate))}
               title={'Test Marker'}

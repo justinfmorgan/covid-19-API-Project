@@ -9,14 +9,14 @@ import {
 // Grabs a JSON of the data when passed a country string
 countryData = (country) => {
     country = country.replace(" ", "-")
-    const URL = `https://api.covid19api.com/total/country/${country}`;
+    const URL = "https://api.covid19api.com/total/country/${country}";
     return fetch(URL)
             .then((res) => res.json());
 }
 
 // Grabs a JSON of the global data
 globalData = () => {
-    const URL = `https://api.covid19api.com/world/total`;
+    const URL = "https://api.covid19api.com/world/total";
     return fetch(URL)
             .then((res) => res.json());
 }
