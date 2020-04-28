@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View , TextInput} from 'react-native';
+import { StyleSheet, Text, View , TextInput, TouchableOpacity} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Permissions from 'expo-permissions'
 import * as Location from 'expo-location'
@@ -9,8 +9,14 @@ import Constants from 'expo-constants';
 Geocoder.init("AIzaSyDzVaKkWBGoCnwxjoeg_ifZ3dUfowZlQAQ");
 
 // Grabs a JSON of the global data
-globalData = () => {
-    const URL = "https://api.covid19api.com/world/total";
+function globalData() {
+    const URL = 'https://api.covid19api.com/world/total';
+    return fetch(URL)
+            .then((res) => res.json());
+}
+
+function summaryData() {
+    const URL = "https://api.covid19api.com/summary";
     return fetch(URL)
             .then((res) => res.json());
 }
@@ -39,12 +45,6 @@ export default class App extends React.Component {
               .then((res) => res.json());
   }
 
-  async summaryData() {
-      const URL = "https://api.covid19api.com/summary";
-      return await fetch(URL)
-              .then((res) => res.json());
-  }
-
   async grabGeoData(lat, lng) {
     await Geocoder.from(lat, lng)
         .then(json => {
@@ -54,7 +54,7 @@ export default class App extends React.Component {
             for (var i = 0; i < addressComponents.length; i++) {
                 if (addressComponents[i].types[0] == "country") {
                     this.setState({ country: addressComponents[i].long_name.replace(" ", "-")});
-                    console.log(addressComponents[i].long_name);
+                    // console.log(addressComponents[i].long_name);
                 }
             }
             this.setState({ geoData: addressComponents});
@@ -76,9 +76,9 @@ export default class App extends React.Component {
   async completedDrag(lat, lon) {
     this.setState({ markerLatitude: lat, markerLongitude: lon});
     await this.grabGeoData(lat, lon);
-    console.log(this.state.country)
+    // console.log(this.state.country)
     // console.log(JSON.stringify(await this.countryData(this.state.country)))
-    let summary = await this.summaryData();
+    let summary = await summaryData();
     // console.log(JSON.stringify(summary))
     // console.log(summary.Countries.length)
     for (var i = 0; i < summary.Countries.length; i++) {
@@ -103,6 +103,15 @@ export default class App extends React.Component {
   handleMapRegionChange = (mapRegion) => {
     // console.log(mapRegion);
     this.setState({ mapRegion });
+  }
+
+  async handlePress() {
+    let worldTotal = await globalData();
+    var TotalConfirmed = worldTotal.TotalConfirmed;
+    var TotalDeaths = worldTotal.TotalDeaths;
+    var TotalRecovered = worldTotal.TotalRecovered;
+    alert("Covid 19 Global Totals:\n" + "Total Confirmed: " + TotalConfirmed + 
+        "\nTotal Deaths: " + TotalDeaths + "\nTotal Recovered: " + TotalRecovered)
   }
 
   findCoordinates = () => {
@@ -181,8 +190,18 @@ export default class App extends React.Component {
               />
             </MapView>
         }
+          <View
+            style={{
+                position: 'absolute',//use absolute position to show button on top of the map
+                top: "5%", //for center align
+                alignSelf: 'center' //for align to right
+            }}
+        >
+            <TouchableOpacity onPress={this.handlePress}>
+                      <Text style={styles.button}>Global Case Summary</Text>
+            </TouchableOpacity>
+        </View>
       </View>
-        
     );
   }
 }
@@ -209,4 +228,16 @@ const styles = StyleSheet.create({
     right:0,
     bottom:0,
   },
+  button: {
+    backgroundColor: 'grey',
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 12,
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    overflow: 'hidden',
+    padding: 5,
+    textAlign:'center',
+  }
 });
