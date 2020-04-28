@@ -35,3 +35,11 @@ Displaying total confirmed cases using an alert upon completing dragging of mark
 <img src="./images/Step_5_2.PNG" width="35%" />
 <br/>
 <img src="./images/Step_5.PNG" width="35%" />
+<br/>
+Displaying more data per country
+<img src="./images/Step_5_3.PNG" width="35%" />
+<br/>
+Implemented global summary button for displaying world totals.
+<img src="./images/Step_5_4.PNG" width="35%" />
+<br/>
+<img src="./images/Step_5_5.PNG" width="35%" />

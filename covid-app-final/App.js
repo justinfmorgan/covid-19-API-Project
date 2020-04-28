@@ -185,8 +185,8 @@ export default class App extends React.Component {
                 this.completedDrag(e.nativeEvent.coordinate.latitude,e.nativeEvent.coordinate.longitude)
               }
                 //alert(JSON.stringify(e.nativeEvent.coordinate))}
-              title={'Test Marker'}
-              description={'This is a description of the marker'}
+              title={'Case Marker'}
+              description={'Drag this marker onto a country to see its covid 19 data'}
               />
             </MapView>
         }
