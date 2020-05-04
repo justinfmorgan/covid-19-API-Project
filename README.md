@@ -1,6 +1,9 @@
 # codvid-app-justinfmorgan
 codvid-app-justinfmorgan created by GitHub Classroom
 
+# How Does it Work?
+After downloading the Expo app and cloning the repo, navigate to the covid-app-final directory and run "expo start" in the terminal (assuming you have react native/expo installed on your computer). Then, scan the QR code that shows up in the web browser builder with your iOS device in order to load up the app. Allow the app to get your location, and then drag the marker to any country to see that country's covid-19 tallies via an alert. Tapping the global summary button at the top of the screen will display the world covid-19 totals.
+
 # Step 1 Documentation
 Setting up the web environment
 <br/>
